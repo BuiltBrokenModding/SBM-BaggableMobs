@@ -1,0 +1,8 @@
+{
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "baggablemobs:items/mob_bag_mob",
+		"layer1": "baggablemobs:items/mob_bag_mob2",
+		"layer2": "baggablemobs:items/mob_bag_mob_base"
+	}
+}

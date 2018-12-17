@@ -1,0 +1,6 @@
+{
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "baggablemobs:items/mob_bag_empty"
+	}
+}
