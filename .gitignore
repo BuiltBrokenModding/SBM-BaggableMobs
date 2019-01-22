@@ -14,3 +14,13 @@ build
 hs_err_pid*
 
 maven.bat
+
+output/
+
+CompiledWith\.txt
+
+changelog\.html
+
+*.iws
+
+SBM-Baggable-Mobs\.txt
