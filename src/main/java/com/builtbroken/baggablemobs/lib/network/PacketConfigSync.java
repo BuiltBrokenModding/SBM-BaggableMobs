@@ -81,7 +81,7 @@ public class PacketConfigSync implements IMessage
         {
             FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
                 Options.MOB_BAG_MAX_STACKSIZE = (int) message.values.get("MobBagMaxStackSize");
-                Options.MOB_LIST_MODE = (boolean) message.values.get("MobListMode") ? MobListMode.BLACKLIST : MobListMode.WHITELIST;
+                Options.MOB_LIST_MODE = (MobListMode) message.values.get("MobListMode");
                 Options.DISABLE_CAPTURING_HOSTILE_MOBS = (boolean) message.values.get("DisableHostileMobCapture");
                 Options.MOB_LIST = (String[]) message.values.get("MobList");
             });
