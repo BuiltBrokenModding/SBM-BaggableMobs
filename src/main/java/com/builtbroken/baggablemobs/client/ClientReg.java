@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 /**
  * Created by Dark(DarkGuardsman, Robert) on 1/20/2019.
  */
-@Mod.EventBusSubscriber(modid = BaggableMobs.MODID)
+@Mod.EventBusSubscriber(modid = BaggableMobs.MODID, value = Side.CLIENT)
 public class ClientReg implements ISelectiveResourceReloadListener
 {
     @SubscribeEvent
