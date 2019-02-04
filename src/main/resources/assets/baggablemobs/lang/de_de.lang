@@ -1,0 +1,12 @@
+## Baggable Mobs German Localizations
+
+item.baggablemobs:mob_bag.name=Kreatursack
+
+itemGroup.baggablemobs=Baggable Mobs
+
+tooltip.profession=Beruf
+tooltip.a_friendly=eine freundliche
+tooltip.any=irgendeine
+tooltip.right_click=Rechstklicke
+tooltip.mob_to_capture=Kreatur um sie einzufangen
+tooltip.captured_mob=Eingefangene Kreatur
