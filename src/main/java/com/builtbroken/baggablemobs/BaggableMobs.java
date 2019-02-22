@@ -2,47 +2,40 @@ package com.builtbroken.baggablemobs;
 
 import com.builtbroken.baggablemobs.content.CommandGenerateEntityList;
 import com.builtbroken.baggablemobs.content.ItemMobBag;
-import com.builtbroken.baggablemobs.content.ModCreativeTab;
-import com.builtbroken.baggablemobs.init.ModConfig;
-import com.builtbroken.baggablemobs.lib.network.PacketHandler;
-import com.builtbroken.baggablemobs.proxy.CommonProxy;
-import net.minecraft.item.Item;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import com.builtbroken.baggablemobs.content.ModItemGroup;
+import com.builtbroken.baggablemobs.init.BaggableMobsConfig;
 
-@Mod.EventBusSubscriber(modid = BaggableMobs.MODID)
-@Mod(modid = BaggableMobs.MODID, name = BaggableMobs.NAME, version = BaggableMobs.VERSION, guiFactory = BaggableMobs.GUI_FACTORY, acceptedMinecraftVersions = "1.12")
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
+
+@Mod.EventBusSubscriber(bus=Bus.MOD)
+@Mod(BaggableMobs.MODID)
 public class BaggableMobs
 {
     public static final String VERSION = "1.0.0";
     public static final String NAME = "Baggable Mobs";
     public static final String MODID = "baggablemobs";
-    public static final String GUI_FACTORY = "com.builtbroken.baggablemobs.init.ModGuiFactory";
-    public static final String CONFIG_FILE = "config/BaggableMobs.cfg";
-
-    @SidedProxy(clientSide = "com.builtbroken.baggablemobs.proxy.ClientProxy", serverSide = "com.builtbroken.baggablemobs.proxy.CommonProxy")
-    public static CommonProxy PROXY;
-
-    @Instance(MODID)
-    public static BaggableMobs INSTANCE;
 
     public static ItemMobBag itemMobBag;
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event)
+    public static final String PROTOCOL_VERSION = "1.0";
+    public static SimpleChannel channel = NetworkRegistry.newSimpleChannel(new ResourceLocation(MODID, MODID), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
+
+    public BaggableMobs()
     {
-        ModConfig.init();
-        PacketHandler.init();
-        ModCreativeTab.init();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, BaggableMobsConfig.CONFIG_SPEC);
+        MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
+        ModItemGroup.init();
     }
 
     @SubscribeEvent
@@ -50,23 +43,8 @@ public class BaggableMobs
         event.getRegistry().register(itemMobBag = new ItemMobBag());
     }
 
-    @EventHandler
-    public void init(FMLInitializationEvent event)
-    {
-        PROXY.init(event);
-    }
-
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
-        PROXY.postInit(event);
-    }
-
-    @EventHandler
     public void serverStarting(FMLServerStartingEvent event)
     {
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            event.registerServerCommand(new CommandGenerateEntityList());
-        }
+        CommandGenerateEntityList.register(event.getCommandDispatcher());
     }
 }

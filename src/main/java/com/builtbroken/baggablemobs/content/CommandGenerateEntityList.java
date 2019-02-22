@@ -1,65 +1,46 @@
 package com.builtbroken.baggablemobs.content;
 
 import com.builtbroken.baggablemobs.lib.BaggableMobsUtil;
-import com.google.common.collect.Lists;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommand;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import java.util.List;
+import net.minecraft.command.CommandSource;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 /**
  * @author p455w0rd
  *
  */
-public class CommandGenerateEntityList implements ICommand {
+public class CommandGenerateEntityList
+{
+    public static void register(CommandDispatcher<CommandSource> dispatcher)
+    {
+        dispatcher.register(LiteralArgumentBuilder.<CommandSource>literal("genentitylist").requires(CommandGenerateEntityList::requirement).executes(CommandGenerateEntityList::executor));
+        dispatcher.register(LiteralArgumentBuilder.<CommandSource>literal("gel").requires(CommandGenerateEntityList::requirement).executes(CommandGenerateEntityList::executor));
+    }
 
-	@Override
-	public int compareTo(ICommand o) {
-		return 0;
-	}
+    private static boolean requirement(CommandSource src)
+    {
+        try
+        {
+            return ServerLifecycleHooks.getCurrentServer().isDedicatedServer() || src.asPlayer().isCreative() || ServerLifecycleHooks.getCurrentServer().getPlayerList().getOppedPlayers().getEntry(src.asPlayer().getGameProfile()) != null;
+        }
+        catch(CommandSyntaxException e)
+        {
+            return false;
+        }
+    }
 
-	@Override
-	public String getName() {
-		return "genentitylist";
-	}
+    private static int executor(CommandContext<CommandSource> ctx)
+    {
+        try
+        {
+            BaggableMobsUtil.generateEntityList(ctx.getSource().asPlayer());
+        }
+        catch(CommandSyntaxException e) {}
 
-	@Override
-	public String getUsage(ICommandSender sender) {
-		return "/" + getName();
-	}
-
-	@Override
-	public List<String> getAliases() {
-		return Lists.newArrayList("genentitylist", "gel");
-	}
-
-	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		BaggableMobsUtil.generateEntityList((EntityPlayer) sender);
-	}
-
-	@Override
-	public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-		if (sender instanceof EntityPlayer) {
-			EntityPlayer player = (EntityPlayer) sender;
-			return !FMLCommonHandler.instance().getMinecraftServerInstance().isDedicatedServer() || player.isCreative() || FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile()) != null;
-		}
-		return false;
-	}
-
-	@Override
-	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
-		return null;
-	}
-
-	@Override
-	public boolean isUsernameIndex(String[] args, int index) {
-		return false;
-	}
-
+        return 0;
+    }
 }

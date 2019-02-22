@@ -1,30 +1,5 @@
 package com.builtbroken.baggablemobs.lib;
 
-import com.builtbroken.baggablemobs.BaggableMobs;
-import com.builtbroken.baggablemobs.init.ModConfig.MobListMode;
-import com.builtbroken.baggablemobs.init.ModConfig.Options;
-import com.google.common.collect.Maps;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerCareer;
-import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,14 +8,40 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.apache.commons.io.FileUtils;
+
+import com.builtbroken.baggablemobs.BaggableMobs;
+import com.builtbroken.baggablemobs.init.BaggableMobsConfig;
+import com.builtbroken.baggablemobs.init.BaggableMobsConfig.MobListMode;
+import com.google.common.collect.Maps;
+
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemSpawnEgg;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerCareer;
+import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
+import net.minecraftforge.registries.ForgeRegistries;
+
 /**
  * @author p455w0rd
  */
-@SuppressWarnings("deprecation")
 public class BaggableMobsUtil
 {
 
-    public static Map<ResourceLocation, EntityEntry> CAPTURABLE_MOBS = Maps.<ResourceLocation, EntityEntry>newHashMap();
+    public static Map<ResourceLocation, EntityType<?>> CAPTURABLE_MOBS = Maps.<ResourceLocation, EntityType<?>>newHashMap();
     public static final String CAPTURED_MOB_TAG = "CapturedMob";
     public static final String CAPTURED_MOB_DATA_TAG = "CapturedMobData";
     private static final BaggableMobsUtil INSTANCE = new BaggableMobsUtil();
@@ -53,12 +54,12 @@ public class BaggableMobsUtil
     // Extracts the Resourcelocation of the mob stored in the bag
     public static ResourceLocation getCapturedMobInBag(ItemStack mobBag)
     {
-        if (mobBag.getItem() == BaggableMobs.itemMobBag && mobBag.hasTagCompound())
+        if (mobBag.getItem() == BaggableMobs.itemMobBag && mobBag.hasTag())
         {
-            NBTTagCompound wandNBT = mobBag.getTagCompound();
-            if (wandNBT.hasKey(CAPTURED_MOB_TAG) && !wandNBT.getString(CAPTURED_MOB_TAG).isEmpty())
+            NBTTagCompound bagNBT = mobBag.getTag();
+            if (bagNBT.contains(CAPTURED_MOB_TAG) && !bagNBT.getString(CAPTURED_MOB_TAG).isEmpty())
             {
-                ResourceLocation mob = new ResourceLocation(wandNBT.getString(CAPTURED_MOB_TAG));
+                ResourceLocation mob = new ResourceLocation(bagNBT.getString(CAPTURED_MOB_TAG));
                 if (ForgeRegistries.ENTITIES.containsKey(mob))
                 {
                     return mob;
@@ -71,14 +72,14 @@ public class BaggableMobsUtil
     // Gets the localized mob name
     public static String getMobName(ItemStack mobBag)
     {
-        if (mobBag.getItem() == BaggableMobs.itemMobBag && mobBag.hasTagCompound() && mobBag.getTagCompound().hasKey(CAPTURED_MOB_TAG))
+        if (mobBag.getItem() == BaggableMobs.itemMobBag && mobBag.hasTag() && mobBag.getTag().contains(CAPTURED_MOB_TAG))
         {
-            for (EntityEntry entry : getCapurableMobs().values())
+            for (EntityType<?> type : getCapturableMobs().values())
             {
-                ResourceLocation resLoc = new ResourceLocation(mobBag.getTagCompound().getString(CAPTURED_MOB_TAG));
-                if (entry.getRegistryName().equals(resLoc))
+                ResourceLocation resLoc = new ResourceLocation(mobBag.getTag().getString(CAPTURED_MOB_TAG));
+                if (type.getRegistryName().equals(resLoc))
                 {
-                    return I18n.translateToLocal("entity." + entry.getName() + ".name");
+                    return I18n.format(type.getTranslationKey());
                 }
             }
         }
@@ -88,29 +89,29 @@ public class BaggableMobsUtil
     // Checks if the ResourceLocation is a villager
     public static boolean isVillager(ResourceLocation resLoc)
     {
-        return resLoc.toString().equals("minecraft:villager");
+        return resLoc.toString().equals(EntityType.VILLAGER.getRegistryName().toString());
     }
 
     // Gets a villager profession
     public static String getCapturedVillagerProfession(ItemStack mobBag)
     {
-        if (mobBag.getItem() == BaggableMobs.itemMobBag && mobBag.hasTagCompound() && mobBag.getTagCompound().hasKey(CAPTURED_MOB_TAG))
+        if (mobBag.getItem() == BaggableMobs.itemMobBag && mobBag.hasTag() && mobBag.getTag().contains(CAPTURED_MOB_TAG))
         {
-            for (EntityEntry entry : getCapurableMobs().values())
+            for (EntityType<?> type : getCapturableMobs().values())
             {
-                ResourceLocation resLoc = new ResourceLocation(mobBag.getTagCompound().getString(CAPTURED_MOB_TAG));
-                if (entry.getRegistryName().equals(resLoc))
+                ResourceLocation resLoc = new ResourceLocation(mobBag.getTag().getString(CAPTURED_MOB_TAG));
+                if (type.getRegistryName().equals(resLoc))
                 {
                     if (isVillager(resLoc))
                     {
-                        if (mobBag.getTagCompound().hasKey(CAPTURED_MOB_DATA_TAG))
+                        if (mobBag.getTag().contains(CAPTURED_MOB_DATA_TAG))
                         {
-                            NBTTagCompound villagerData = mobBag.getTagCompound().getCompoundTag(CAPTURED_MOB_DATA_TAG);
+                            NBTTagCompound villagerData = mobBag.getTag().getCompound(CAPTURED_MOB_DATA_TAG);
                             VillagerProfession profession = ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new ResourceLocation(villagerData.getString("ProfessionName")));
-                            VillagerCareer career = profession.getCareer(villagerData.getInteger("Career"));
-                            return "- " + I18n.translateToLocal("tooltip.profession") + ": " + I18n.translateToLocal("entity.Villager." + career.getName());
+                            VillagerCareer career = profession.getCareer(villagerData.getInt("Career"));
+                            return "- " + I18n.format("tooltip.profession") + ": " + I18n.format("entity.minecraft.villager." + career.getName().toLowerCase());
                         }
-                        return "- " + I18n.translateToLocal("tooltip.profession") + ": " + I18n.translateToLocal("entity.Villager.farmer");
+                        return "- " + I18n.format("tooltip.profession") + ": " + I18n.format("entity.minecraft.villager");
                     }
                 }
             }
@@ -121,30 +122,33 @@ public class BaggableMobsUtil
     // Gets the mob egg color for purposes of coloring a filled bag
     public static int getMobEggColor(ResourceLocation resLoc, int index)
     {
-        for (EntityEntry entry : ForgeRegistries.ENTITIES.getValuesCollection())
+        for (EntityType<?> type : ForgeRegistries.ENTITIES.getValues())
         {
-            if (entry.getRegistryName().equals(resLoc) && entry.getEgg() != null)
+            if (type.getRegistryName().equals(resLoc))
             {
-                return index == 0 ? entry.getEgg().primaryColor : entry.getEgg().secondaryColor;
+                ItemSpawnEgg egg = ItemSpawnEgg.getEgg(type);
+
+                if(egg != null)
+                    return egg.getColor(index);
             }
         }
         return -1;
     }
 
     // Gets/Generates the list of current valid capturable mobs
-    public static Map<ResourceLocation, EntityEntry> getCapurableMobs()
+    public static Map<ResourceLocation, EntityType<?>> getCapturableMobs()
     {
         if (CAPTURABLE_MOBS.isEmpty())
         {
             if (getConfigMobListMode() == MobListMode.BLACKLIST)
             {
-                for (Entry<ResourceLocation, EntityEntry> entry : ForgeRegistries.ENTITIES.getEntries())
+                for (Entry<ResourceLocation, EntityType<?>> entry : ForgeRegistries.ENTITIES.getEntries())
                 {
-                    if (Options.DISABLE_CAPTURING_HOSTILE_MOBS && EntityMob.class.isAssignableFrom(entry.getValue().getEntityClass()))
+                    if (BaggableMobsConfig.CONFIG.DISABLE_CAPTURING_HOSTILE_MOBS.get() && EntityMob.class.isAssignableFrom(entry.getValue().getEntityClass()))
                     {
                         continue;
                     }
-                    if (EntityLiving.class.isAssignableFrom(entry.getValue().getEntityClass()) && !getConfigMobList().contains(entry.getValue().getEntityClass()))
+                    if (EntityLiving.class.isAssignableFrom(entry.getValue().getEntityClass()) && !getConfigMobList().contains(entry.getValue()))
                     {
                         CAPTURABLE_MOBS.put(entry.getKey(), entry.getValue());
                     }
@@ -152,12 +156,9 @@ public class BaggableMobsUtil
             }
             else
             {
-                for (Class<? extends EntityLiving> clazz : getConfigMobList())
+                for (EntityType<?> type : getConfigMobList())
                 {
-                    if (EntityLiving.class.isAssignableFrom(clazz))
-                    {
-                        CAPTURABLE_MOBS.put(EntityList.getKey(clazz), ForgeRegistries.ENTITIES.getValue(EntityList.getKey(clazz)));
-                    }
+                    CAPTURABLE_MOBS.put(type.getRegistryName(), type);
                 }
             }
         }
@@ -167,26 +168,28 @@ public class BaggableMobsUtil
     // Gets the mob list mode from the config file
     private static MobListMode getConfigMobListMode()
     {
-        return Options.MOB_LIST_MODE;
+        return MobListMode.values()[BaggableMobsConfig.CONFIG.MOB_LIST_MODE.get()];
     }
 
     // Gets the mob list array from the config file
-    @SuppressWarnings("unchecked")
-    private static List<Class<? extends EntityLiving>> getConfigMobList() throws InvalidEntityException
+    private static List<EntityType<?>> getConfigMobList() throws InvalidEntityException
     {
-        List<Class<? extends EntityLiving>> mobList = new ArrayList<>();
-        if (Options.MOB_LIST.length == 0)
+        List<EntityType<?>> mobList = new ArrayList<>();
+        if (BaggableMobsConfig.CONFIG.MOB_LIST.get().size() == 0)
         {
             return mobList;
         }
-        for (String registryName : Options.MOB_LIST)
+        for (String registryName : BaggableMobsConfig.CONFIG.MOB_LIST.get())
         {
-            Class<? extends Entity> clazz = EntityList.getClass(new ResourceLocation(registryName));
-            if (clazz != null && EntityLiving.class.isAssignableFrom(clazz))
+            ResourceLocation loc = new ResourceLocation(registryName);
+
+            if(ForgeRegistries.ENTITIES.containsKey(loc))
             {
-                if (!mobList.contains(clazz))
+                EntityType<?> type = ForgeRegistries.ENTITIES.getValue(loc);
+
+                if (!mobList.contains(type))
                 {
-                    mobList.add((Class<? extends EntityLiving>) clazz);
+                    mobList.add(type);
                 }
             }
             else
@@ -209,11 +212,11 @@ public class BaggableMobsUtil
         List<String> fileContents = new ArrayList<>();
         fileContents.add("Registry Name - Class Name - Entity Name");
         fileContents.add("========================================");
-        for (EntityEntry entity : ForgeRegistries.ENTITIES.getValuesCollection())
+        for (EntityType<?> entity : ForgeRegistries.ENTITIES.getValues())
         {
             if (EntityLiving.class.isAssignableFrom(entity.getEntityClass()))
             {
-                fileContents.add(entity.getRegistryName().toString() + " - " + entity.getEntityClass().getSimpleName().toString() + ".class - " + I18n.translateToLocal("entity." + entity.getName() + ".name"));
+                fileContents.add(entity.getRegistryName().toString() + " - " + entity.getEntityClass().getSimpleName().toString() + ".class - " + I18n.format(entity.getTranslationKey()));
             }
         }
         try
@@ -231,15 +234,15 @@ public class BaggableMobsUtil
     {
         if (!mobBag.isEmpty() && mobBag.getItem() == BaggableMobs.itemMobBag && doesBagHaveMobStored(mobBag))
         {
-            for (EntityEntry entry : getCapurableMobs().values())
+            for (EntityType<?> entry : getCapturableMobs().values())
             {
                 if (entry.getRegistryName().equals(getCapturedMobInBag(mobBag)))
                 {
-                    Entity entity = entry.newInstance(world);
+                    Entity entity = entry.create(world);
 
-                    if (mobBag.getTagCompound().hasKey(CAPTURED_MOB_DATA_TAG))
+                    if (mobBag.getTag().contains(CAPTURED_MOB_DATA_TAG))
                     {
-                        entity.readFromNBT(mobBag.getTagCompound().getCompoundTag(CAPTURED_MOB_DATA_TAG));
+                        entity.read(mobBag.getTag().getCompound(CAPTURED_MOB_DATA_TAG));
                         if (getCapturedMobInBag(mobBag).toString().equals("minecraft:villager"))
                         {
 
@@ -250,11 +253,11 @@ public class BaggableMobsUtil
                     world.spawnEntity(entity);
                     if (!isPlayerCreative)
                     {
-                        mobBag.setTagCompound(null);
+                        mobBag.setTag(null);
                     }
                     if (entity instanceof EntityLiving)
                     {
-                        ((EntityLiving) entity).playLivingSound();
+                        ((EntityLiving) entity).playAmbientSound();
                     }
                     return true;
                 }
@@ -277,20 +280,20 @@ public class BaggableMobsUtil
                 leftOverBags.setCount(mobBag.getCount() - 1);
                 mobBag.setCount(1);
             }
-            for (EntityEntry entry : getCapurableMobs().values())
+            for (EntityType<?> type : getCapturableMobs().values())
             {
-                if (entry.getEntityClass().equals(mob.getClass()))
+                if (type.getEntityClass().equals(mob.getClass()))
                 {
-                    String mobLoc = entry.getRegistryName().toString();
-                    if (!mobBag.hasTagCompound())
+                    String mobLoc = type.getRegistryName().toString();
+                    if (!mobBag.hasTag())
                     {
-                        mobBag.setTagCompound(new NBTTagCompound());
+                        mobBag.setTag(new NBTTagCompound());
                     }
-                    mobBag.getTagCompound().setString(CAPTURED_MOB_TAG, mobLoc);
-                    mobBag.getTagCompound().setTag(CAPTURED_MOB_DATA_TAG, mob.writeToNBT(new NBTTagCompound()));
+                    mobBag.getTag().putString(CAPTURED_MOB_TAG, mobLoc);
+                    mobBag.getTag().put(CAPTURED_MOB_DATA_TAG, mob.serializeNBT());
                     if (killMob)
                     {
-                        mob.setDead();
+                        mob.remove();
                     }
                     if (!leftOverBags.isEmpty())
                     {

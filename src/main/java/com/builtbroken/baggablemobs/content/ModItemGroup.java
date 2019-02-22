@@ -1,45 +1,48 @@
 package com.builtbroken.baggablemobs.content;
 
-import com.builtbroken.baggablemobs.BaggableMobs;
-import com.builtbroken.baggablemobs.init.ModConfig.Options;
-import com.builtbroken.baggablemobs.lib.BaggableMobsUtil;
-import com.google.common.collect.Lists;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
-import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
-import net.minecraftforge.registries.GameData;
+import static com.builtbroken.baggablemobs.lib.BaggableMobsUtil.CAPTURED_MOB_DATA_TAG;
+import static com.builtbroken.baggablemobs.lib.BaggableMobsUtil.CAPTURED_MOB_TAG;
+import static com.builtbroken.baggablemobs.lib.BaggableMobsUtil.doesBagHaveMobStored;
 
 import java.util.Collection;
 import java.util.List;
 
-import static com.builtbroken.baggablemobs.lib.BaggableMobsUtil.*;
+import com.builtbroken.baggablemobs.BaggableMobs;
+import com.builtbroken.baggablemobs.init.BaggableMobsConfig;
+import com.builtbroken.baggablemobs.lib.BaggableMobsUtil;
+import com.google.common.collect.Lists;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
+import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.GameData;
 
 /**
  * @author p455w0rd
  */
-public class ModCreativeTab extends CreativeTabs
+public class ModItemGroup extends ItemGroup
 {
 
-    public static CreativeTabs TAB;
+    public static ItemGroup GROUP;
     public static List<ItemStack> BAG_LIST = Lists.<ItemStack>newArrayList();
 
-    public ModCreativeTab()
+    public ModItemGroup()
     {
         super(BaggableMobs.MODID);
     }
 
     public static void init()
     {
-        TAB = new ModCreativeTab();
+        GROUP = new ModItemGroup();
     }
 
     @Override
@@ -49,30 +52,30 @@ public class ModCreativeTab extends CreativeTabs
     }
 
     @Override
-    public void displayAllRelevantItems(NonNullList<ItemStack> items)
+    public void fill(NonNullList<ItemStack> items)
     {
         items.add(new ItemStack(BaggableMobs.itemMobBag));
-        items.addAll(getWandList());
+        items.addAll(getBagList());
     }
 
-    public static List<ItemStack> getWandList()
+    public static List<ItemStack> getBagList()
     {
         if (BAG_LIST.isEmpty())
         {
-            Collection<EntityEntry> mobList = BaggableMobsUtil.getCapurableMobs().values();
-            for (EntityEntry entry : mobList)
+            Collection<EntityType<?>> mobList = BaggableMobsUtil.getCapturableMobs().values();
+            for (EntityType<?> type : mobList)
             {//ForgeRegistries.ENTITIES.getValuesCollection()) {
-                Class<? extends Entity> tempEntity = entry.getEntityClass();
+                Class<? extends Entity> tempEntity = type.getEntityClass();
                 if (EntityCreature.class.isAssignableFrom(tempEntity) || EntityDragon.class.isAssignableFrom(tempEntity))
                 {
-                    if (Options.DISABLE_CAPTURING_HOSTILE_MOBS && EntityMob.class.isAssignableFrom(tempEntity))
+                    if (BaggableMobsConfig.CONFIG.DISABLE_CAPTURING_HOSTILE_MOBS.get() && EntityMob.class.isAssignableFrom(tempEntity))
                     {
                         continue;
                     }
 
-                    if (BaggableMobsUtil.isVillager(entry.getRegistryName()))
+                    if (BaggableMobsUtil.isVillager(type.getRegistryName()))
                     {
-                        for (VillagerProfession profession : ForgeRegistries.VILLAGER_PROFESSIONS.getValuesCollection())
+                        for (VillagerProfession profession : ForgeRegistries.VILLAGER_PROFESSIONS.getValues())
                         {
                             ItemStack mobBag = new ItemStack(BaggableMobs.itemMobBag);
                             if (!storeVillagerInBag(mobBag, profession))
@@ -96,16 +99,16 @@ public class ModCreativeTab extends CreativeTabs
     {
         if (mobBag.getItem() == BaggableMobs.itemMobBag && !doesBagHaveMobStored(mobBag))
         {
-            for (EntityEntry entry : BaggableMobsUtil.getCapurableMobs().values())
+            for (EntityType<?> type : BaggableMobsUtil.getCapturableMobs().values())
             {
-                if (entry.getEntityClass().equals(clazz))
+                if (type.getEntityClass().equals(clazz))
                 {
-                    String mobLoc = entry.getRegistryName().toString();
-                    if (!mobBag.hasTagCompound())
+                    String mobLoc = type.getRegistryName().toString();
+                    if (!mobBag.hasTag())
                     {
-                        mobBag.setTagCompound(new NBTTagCompound());
+                        mobBag.setTag(new NBTTagCompound());
                     }
-                    mobBag.getTagCompound().setString(CAPTURED_MOB_TAG, mobLoc);
+                    mobBag.getTag().putString(CAPTURED_MOB_TAG, mobLoc);
                 }
             }
         }
@@ -115,24 +118,24 @@ public class ModCreativeTab extends CreativeTabs
     {
         if (mobBag.getItem() == BaggableMobs.itemMobBag && !doesBagHaveMobStored(mobBag))
         {
-            for (EntityEntry entry : BaggableMobsUtil.getCapurableMobs().values())
+            for (EntityType<?> type : BaggableMobsUtil.getCapturableMobs().values())
             {
-                if (entry.getEntityClass().equals(EntityVillager.class))
+                if (type.getEntityClass().equals(EntityVillager.class))
                 {
-                    String mobLoc = entry.getRegistryName().toString();
-                    if (!mobBag.hasTagCompound())
+                    String mobLoc = type.getRegistryName().toString();
+                    if (!mobBag.hasTag())
                     {
-                        mobBag.setTagCompound(new NBTTagCompound());
+                        mobBag.setTag(new NBTTagCompound());
                     }
-                    mobBag.getTagCompound().setString(CAPTURED_MOB_TAG, mobLoc);
+                    mobBag.getTag().putString(CAPTURED_MOB_TAG, mobLoc);
                     NBTTagCompound professionData = new NBTTagCompound();
-                    professionData.setInteger("Profession", GameData.getWrapper(VillagerProfession.class).getIDForObject(profession));
-                    professionData.setString("ProfessionName", profession.getRegistryName().toString());
-                    professionData.setInteger("Career", 0);
-                    professionData.setInteger("CareerLevel", 0);
-                    professionData.setInteger("Riches", 0);
-                    professionData.setByte("Willing", (byte) 0);
-                    mobBag.getTagCompound().setTag(CAPTURED_MOB_DATA_TAG, professionData);
+                    professionData.putInt("Profession", GameData.getWrapper(VillagerProfession.class).getId(profession));
+                    professionData.putString("ProfessionName", profession.getRegistryName().toString());
+                    professionData.putInt("Career", 0);
+                    professionData.putInt("CareerLevel", 0);
+                    professionData.putInt("Riches", 0);
+                    professionData.putByte("Willing", (byte) 0);
+                    mobBag.getTag().put(CAPTURED_MOB_DATA_TAG, professionData);
                     return true;
                 }
             }

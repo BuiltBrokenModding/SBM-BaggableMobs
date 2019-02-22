@@ -1,71 +1,64 @@
 buildscript {
     repositories {
-        mavenCentral()
+        maven { url = 'https://files.minecraftforge.net/maven' }
         jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
+        mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+    }
+}
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+
+version = '1.0.0'
+group = 'baggablemobs'
+archivesBaseName = 'SBM-Baggable Mobs'
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+
+minecraft {
+    mappings channel: 'snapshot', version: '20191702-1.13.1'
+	
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
     }
 }
 
-plugins {
-  //Applies the Build scan plugin so i can upload issues easily and link to gradle devs
-  //id 'com.gradle.build-scan' version '1.4'
-  //applies CurseGradle plugin for uploading to CurseForge
-  id "com.matthewprenger.cursegradle" version "1.1.0"
-  // id "net.saliman.cobertura" version "2.5.3"
-  // id "com.github.kt3k.coveralls" version "2.8.2"
-  //id "com.github.johnrengelman.shadow" version "1.2.2"
-  id "net.franz-becker.gradle-lombok" version "1.3"
-  id 'com.jfrog.bintray' version '1.1'
-  //Applies the changelog pluginid 
-  id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.55"
-  id "org.ajoberstar.grgit" version "2.1.0"
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.13.2-25.0.45'
 }
-
-apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/1.12.2/index/index.gradle'
-
-dependencies 
-{
-    testCompile 'junit:junit:4.11'
-    // compile against the JEI API
-    // deobfCompile "mezz.jei:jei_${minecraft.version}:4.12.0.216:api"
-}
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 jar {
-     manifest.mainAttributes(
-            "Built-By": System.getProperty('user.name'),
-            "Created-By": project.CurrentJVM,
-            "Implementation-Title": archivesBaseName,
-            "Implementation-Version": project.version,
-            "Git-Hash": project.GitHash)
-}
-
-deobfJar {
-     manifest.mainAttributes(
-            "Built-By": System.getProperty('user.name'),
-            "Created-By": project.CurrentJVM,
-            "Implementation-Title": archivesBaseName,
-            "Implementation-Version": project.version,
-            "Git-Hash": project.GitHash)
-}
-
-sourcesJar {
-     manifest.mainAttributes(
-            "Built-By": System.getProperty('user.name'),
-            "Created-By": project.CurrentJVM,
-            "Implementation-Title": archivesBaseName,
-            "Implementation-Version": project.version,
-            "Git-Hash": project.GitHash)
+    manifest {
+        attributes(["Specification-Title": "SBM-Baggable Mobs",
+                    "Specification-Vendor": "Built Broken Modding",
+                    "Specification-Version": "1.0.0",
+                    "Implementation-Title": "SBM-Baggable Mobs",
+                    "Implementation-Version": "1.0.0",
+                    "Implementation-Vendor" :"Built Broken Modding",
+                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")],)
+    }
 }

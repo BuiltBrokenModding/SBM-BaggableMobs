@@ -1,0 +1,14 @@
+{
+    "_comment": "# Baggable Mobs FR France Localizations",
+
+    "item.baggablemobs.mob_bag": "Sac à créatures",
+
+    "itemGroup.baggablemobs": "Baggable Mobs",
+
+    "tooltip.profession": "Profession",
+    "tooltip.a_friendly": "une créature amicale",
+    "tooltip.any": "n'importe quelle créature",
+    "tooltip.right_click": "Utiliser sur",
+    "tooltip.mob_to_capture": "pour la capturer",
+    "tooltip.captured_mob": "Créature en sac"
+}
