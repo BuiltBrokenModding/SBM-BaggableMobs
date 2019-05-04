@@ -94,28 +94,32 @@ public class BaggableMobsUtil
     // Gets a villager profession
     public static String getCapturedVillagerProfession(ItemStack mobBag)
     {
-        if (mobBag.getItem() == BaggableMobs.itemMobBag && mobBag.hasTagCompound() && mobBag.getTagCompound().hasKey(CAPTURED_MOB_TAG))
+        if(!ForgeRegistries.VILLAGER_PROFESSIONS.getKeys().isEmpty())
         {
-            for (EntityEntry entry : getCapurableMobs().values())
+            if (mobBag.getItem() == BaggableMobs.itemMobBag && mobBag.hasTagCompound() && mobBag.getTagCompound().hasKey(CAPTURED_MOB_TAG))
             {
-                ResourceLocation resLoc = new ResourceLocation(mobBag.getTagCompound().getString(CAPTURED_MOB_TAG));
-                if (entry.getRegistryName().equals(resLoc))
+                for (EntityEntry entry : getCapurableMobs().values())
                 {
-                    if (isVillager(resLoc))
+                    ResourceLocation resLoc = new ResourceLocation(mobBag.getTagCompound().getString(CAPTURED_MOB_TAG));
+                    if (entry.getRegistryName().equals(resLoc))
                     {
-                        if (mobBag.getTagCompound().hasKey(CAPTURED_MOB_DATA_TAG))
+                        if (isVillager(resLoc))
                         {
-                            NBTTagCompound villagerData = mobBag.getTagCompound().getCompoundTag(CAPTURED_MOB_DATA_TAG);
-                            VillagerProfession profession = ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new ResourceLocation(villagerData.getString("ProfessionName")));
-                            VillagerCareer career = profession.getCareer(villagerData.getInteger("Career"));
-                            return "- " + I18n.translateToLocal("tooltip.profession") + ": " + I18n.translateToLocal("entity.Villager." + career.getName());
+                            if (mobBag.getTagCompound().hasKey(CAPTURED_MOB_DATA_TAG))
+                            {
+                                NBTTagCompound villagerData = mobBag.getTagCompound().getCompoundTag(CAPTURED_MOB_DATA_TAG);
+                                VillagerProfession profession = ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new ResourceLocation(villagerData.getString("ProfessionName")));
+                                VillagerCareer career = profession.getCareer(villagerData.getInteger("Career"));
+                                return "- " + I18n.translateToLocal("tooltip.profession") + ": " + I18n.translateToLocal("entity.Villager." + career.getName());
+                            }
+                            return "- " + I18n.translateToLocal("tooltip.profession") + ": " + I18n.translateToLocal("entity.Villager.farmer");
                         }
-                        return "- " + I18n.translateToLocal("tooltip.profession") + ": " + I18n.translateToLocal("entity.Villager.farmer");
                     }
                 }
             }
+            return "--";
         }
-        return "";
+        return "N/A";
     }
 
     // Gets the mob egg color for purposes of coloring a filled bag
