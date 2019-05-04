@@ -1,1 +1,1 @@
-gradlew clean build publish --refresh-dependencies
+gradlew clean build --refresh-dependencies
