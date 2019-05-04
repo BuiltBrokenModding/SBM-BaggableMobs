@@ -65,22 +65,31 @@ public class ItemMobBag extends Item
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
-        ResourceLocation mob = BaggableMobsUtil.getCapturedMobInBag(stack);
-        if (mob == null)
+        try
         {
-            String mobType = Options.DISABLE_CAPTURING_HOSTILE_MOBS ? I18n.translateToLocal("tooltip.a_friendly") : I18n.translateToLocal("tooltip.any");
-            tooltip.add(I18n.translateToLocal("tooltip.right_click") + " " + mobType + " " + I18n.translateToLocal("tooltip.mob_to_capture"));
-        }
-        else
-        {
-            if (BaggableMobsUtil.isVillager(BaggableMobsUtil.getCapturedMobInBag(stack)))
+            ResourceLocation mob = BaggableMobsUtil.getCapturedMobInBag(stack);
+            if (mob == null)
             {
-                String profession = BaggableMobsUtil.getCapturedVillagerProfession(stack);
-                if (!profession.isEmpty())
+                String mobType = Options.DISABLE_CAPTURING_HOSTILE_MOBS ? I18n.translateToLocal("tooltip.a_friendly") : I18n.translateToLocal("tooltip.any");
+                tooltip.add(I18n.translateToLocal("tooltip.right_click") + " " + mobType + " " + I18n.translateToLocal("tooltip.mob_to_capture"));
+            }
+            else
+            {
+                if (BaggableMobsUtil.isVillager(BaggableMobsUtil.getCapturedMobInBag(stack)))
                 {
-                    tooltip.add(profession);
+                    String profession = BaggableMobsUtil.getCapturedVillagerProfession(stack);
+                    if (!profession.isEmpty())
+                    {
+                        tooltip.add(profession);
+                    }
                 }
             }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            tooltip.add("-Error getting tooltip:");
+            tooltip.add("--" + e.getMessage());
         }
     }
 
