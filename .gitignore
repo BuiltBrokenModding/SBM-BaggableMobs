@@ -24,3 +24,5 @@ changelog\.html
 *.iws
 
 SBM-Baggable-Mobs\.txt
+
+out/
