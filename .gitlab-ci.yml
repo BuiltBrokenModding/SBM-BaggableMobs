@@ -4,7 +4,6 @@ image: "ruby:2.3.1"
 
 # Assure everything that is required is installed incase gitlab is deployed on another machine
 before_script:
-  - apt-get install ruby
   - apt-get install -y sqlite3 libsqlite3-dev nodejs
   - gem install bundler --no-document
   - bundle install --jobs $(nproc)  "${FLAGS[@]}"
