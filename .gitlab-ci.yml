@@ -9,7 +9,7 @@ image: "ruby:2.3.1"
 #  - gem install bundler --no-document
 #  - bundle install --jobs $(nproc)  "${FLAGS[@]}"
   
-# Awaiting for bamboo to come back online so i can copy the tasks
+# Run the following commands
 build:
   script:
     -chmod a+x ./gradlew
