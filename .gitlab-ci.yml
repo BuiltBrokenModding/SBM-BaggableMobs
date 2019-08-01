@@ -11,7 +11,6 @@ before_script:
 # Awaiting for bamboo to come back online so i can copy the tasks
 build:
   script:
-    -
-    -
-    -
-    -
+    -chmod a+x ./gradlew
+    -git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
+    -./gradlew clean build makeChangelog publish curseforge312123 -S -i --refresh-dependencies
