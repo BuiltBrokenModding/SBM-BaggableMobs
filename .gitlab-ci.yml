@@ -2,12 +2,16 @@
 
 image: "ruby:2.3.1"
 
-# Uncomment when installing on another device
+# Run seperatly when installing on another device
+#  - apt-get install -y sqlite3 libsqlite3-dev nodejs gradle ruby-rspec-core ruby-railties
 
 before_script:
-#  - apt-get install -y sqlite3 libsqlite3-dev nodejs gradle ruby-rspec-core ruby-railties
  - gem install bundler --no-document
  - bundle install --jobs $(nproc)  "${FLAGS[@]}"
+ # setup adds gems to Ruby's load path
+ - Bundler.setup                    # defaults to all groups
+ - require "bundler/setup"          # same as Bundler.setup
+ 
   
 # Run the following commands
 build:
