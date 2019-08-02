@@ -4,10 +4,10 @@ image: "ruby:2.3.1"
 
 # Uncomment when installing on another device
 
-# before_script:
+before_script:
 #  - apt-get install -y sqlite3 libsqlite3-dev nodejs gradle ruby-rspec-core ruby-railties
-#  - gem install bundler --no-document
-#  - bundle install --jobs $(nproc)  "${FLAGS[@]}"
+ - gem install bundler --no-document
+ - bundle install --jobs $(nproc)  "${FLAGS[@]}"
   
 # Run the following commands
 build:
