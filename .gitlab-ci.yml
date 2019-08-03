@@ -17,10 +17,14 @@ before_script:
 build:
   stage: build
   script:
-    -gradle --build-cache assemble
-    -chmod a+x ./gradlew
-    -git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
-    -./gradlew clean build makeChangelog publish curseforge312123 -S -i --refresh-dependencies
+    - gradle --build-cache assemble
+    - chmod a+x ./gradlew
+    - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
+    - ./gradlew clean build makeChangelog publish curseforge312123 -S -i --refresh-dependencies
+  artifacts:
+    paths:
+      - build/libs/*.jar
+    expire_in: 1 week
   cache:
     key: "$CI_COMMIT_REF_NAME"
 #    policy: push
