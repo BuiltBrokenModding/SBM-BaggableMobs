@@ -18,7 +18,7 @@ build:
   script:
     - chmod a+x ./build.gradle
     - chmod a+x ./gradlew
-    - build.gradle
+    - ./build.gradle
     - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
   cache:
     key: "$CI_COMMIT_REF_NAME"
