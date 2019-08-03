@@ -21,6 +21,12 @@ build:
     - chmod a+x ./gradlew
     - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
     - gradle --build-cache assemble
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - build
+      - .gradle
   artifacts:
     paths:
       - build/libs/*.jar
