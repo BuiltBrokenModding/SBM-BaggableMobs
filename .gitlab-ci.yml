@@ -3,7 +3,7 @@
 image: gradle:alpine
 
 # Run seperatly when installing on another device
-#  - apt-get install -y sqlite3 libsqlite3-dev nodejs gradle ruby-rspec-core ruby-railties
+#  - apt-get install -y sqlite3 libsqlite3-dev nodejs gradle
   
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
