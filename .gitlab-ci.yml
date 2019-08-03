@@ -8,7 +8,6 @@ image: gradle:alpine
 variables:
   GRADLE_OPTS: 
     -Dorg.gradle.daemon=false
-    -Dorg.gradle.caching=true
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -26,12 +25,6 @@ build:
     paths:
       - build/libs/*.jar
     expire_in: 1 week
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - build
-      - .gradle
       
 deploy:
   stage: deploy
