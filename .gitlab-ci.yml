@@ -10,6 +10,7 @@ variables:
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
+  - gradle build
   
   
 # Run the following commands
@@ -17,9 +18,7 @@ build:
   stage: build
   script:
     - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
-    - chmod a+x ./build.gradle
     - chmod a+x ./gradlew
-    - ./build.gradle
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
