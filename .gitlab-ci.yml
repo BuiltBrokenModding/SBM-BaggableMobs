@@ -23,7 +23,7 @@ build:
     -./gradlew clean build makeChangelog publish curseforge312123 -S -i --refresh-dependencies
   cache:
     key: "$CI_COMMIT_REF_NAME"
-    policy: push
+#    policy: push
     paths:
       - build
       - .gradle
