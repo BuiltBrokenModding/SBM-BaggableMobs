@@ -17,9 +17,9 @@ before_script:
 build:
   stage: build
   script:
-    - gradle --build-cache assemble
     - chmod a+x ./gradlew
     - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
+    - gradle --build-cache assemble
     - ./gradlew clean build makeChangelog publish curseforge312123 -S -i --refresh-dependencies
   artifacts:
     paths:
