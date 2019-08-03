@@ -6,7 +6,9 @@ image: gradle:alpine
 #  - apt-get install -y sqlite3 libsqlite3-dev nodejs gradle
   
 variables:
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  GRADLE_OPTS: 
+    -Dorg.gradle.daemon=false
+#    -Dorg.gradle.caching=true
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
