@@ -1,20 +1,21 @@
 # Testfile for gitlabs CI/CD Pipeline and Auto DevOps
 
-image: "ruby:2.3.1"
+image: gradle:alpine
 
 # Run seperatly when installing on another device
 #  - apt-get install -y sqlite3 libsqlite3-dev nodejs gradle ruby-rspec-core ruby-railties
+  
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
 before_script:
- - gem install bundler --no-document
- - bundle install --jobs $(nproc)  "${FLAGS[@]}"
- # setup adds gems to Ruby's load path
- - Bundler.setup                    # defaults to all groups
- - require "bundler/setup"          
- 
+  - export GRADLE_USER_HOME=`pwd`/.gradle
   
+  
+
 # Run the following commands
 build:
+  stage: build
   script:
     -chmod a+x ./gradlew
     -git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
