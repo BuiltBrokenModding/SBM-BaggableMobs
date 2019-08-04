@@ -34,7 +34,7 @@ test:
   stage: test
   script: 
     - chmod 770 gradlew
-    - ./gradlew makeChangelog
+    - ./gradlew clean build makeChangelog
   artifacts:
     paths:
       - /*.html
