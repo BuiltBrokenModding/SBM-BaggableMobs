@@ -33,10 +33,10 @@ deploy:
   stage: deploy
   script:
     - ./gradlew clean build makeChangelog publish curseforge312123 -S -i --refresh-dependencies
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - build
-      - .gradle
+#  cache:
+#    key: "$CI_COMMIT_REF_NAME"
+#    policy: pull
+#    paths:
+#      - build
+#      - .gradle
 
