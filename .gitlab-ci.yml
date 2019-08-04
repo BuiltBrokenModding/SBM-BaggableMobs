@@ -37,7 +37,7 @@ test:
     - ./gradlew clean build makeChangelog
   artifacts:
     paths:
-      - /*.html
+      - build/libs/*.html
     expire_in: 1 week
     
     
