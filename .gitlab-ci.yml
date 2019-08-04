@@ -16,6 +16,8 @@ before_script:
 build:
   stage: build
   script:
+    - mkdir build
+    - mkdir libs
     - gradle build
     - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
     - chmod a+x ./gradlew
