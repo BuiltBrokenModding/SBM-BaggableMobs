@@ -6,7 +6,6 @@
 variables:
   GRADLE_OPTS: 
     -Dorg.gradle.daemon=false
-    -org.gradle.caching=true
 
 before_script:
 #  - export GRADLE_USER_HOME=`pwd`/.gradle
