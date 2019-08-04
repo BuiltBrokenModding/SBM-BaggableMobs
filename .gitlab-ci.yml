@@ -36,6 +36,8 @@ build:
 deploy:
   stage: deploy
   script:
+    - mkdir build
+    - mkdir libs
     - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
     - chmod 770 gradlew
     - ./gradlew clean build publish makeChangelog curseforge312123 -S -i --refresh-dependencies
