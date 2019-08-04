@@ -41,4 +41,8 @@ deploy:
     paths:
       - build
       - .gradle
+  artifacts:
+    paths:
+      - **/*.html
+    expire_in: 1 week
 
