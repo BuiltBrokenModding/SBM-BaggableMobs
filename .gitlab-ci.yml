@@ -43,4 +43,8 @@ deploy:
     paths:
       - build
       - .gradle
+  artifacts:
+    paths:
+      - /changelog.html
+    expire_in: 1 week
 
