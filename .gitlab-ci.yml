@@ -30,8 +30,8 @@ build:
     expire_in: 1 week
     
     
-build_changelog:
-  stage: build_changelog
+test:
+  stage: test
   script: 
     - chmod 770 gradlew
     - ./gradlew makeChangelog
