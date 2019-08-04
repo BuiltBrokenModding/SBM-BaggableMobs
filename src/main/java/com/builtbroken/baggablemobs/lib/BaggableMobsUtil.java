@@ -17,22 +17,22 @@ import com.google.common.collect.Maps;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemSpawnEgg;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.merchant.villager.VillagerProfession;
+import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.SpawnEggItem;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerCareer;
-import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
 import net.minecraftforge.registries.ForgeRegistries;
 
 /**
@@ -56,7 +56,7 @@ public class BaggableMobsUtil
     {
         if (mobBag.getItem() == BaggableMobs.itemMobBag && mobBag.hasTag())
         {
-            NBTTagCompound bagNBT = mobBag.getTag();
+            CompoundNBT bagNBT = mobBag.getTag();
             if (bagNBT.contains(CAPTURED_MOB_TAG) && !bagNBT.getString(CAPTURED_MOB_TAG).isEmpty())
             {
                 ResourceLocation mob = new ResourceLocation(bagNBT.getString(CAPTURED_MOB_TAG));
@@ -106,8 +106,8 @@ public class BaggableMobsUtil
                     {
                         if (mobBag.getTag().contains(CAPTURED_MOB_DATA_TAG))
                         {
-                            NBTTagCompound villagerData = mobBag.getTag().getCompound(CAPTURED_MOB_DATA_TAG);
-                            VillagerProfession profession = ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new ResourceLocation(villagerData.getString("ProfessionName")));
+                            CompoundNBT villagerData = mobBag.getTag().getCompound(CAPTURED_MOB_DATA_TAG);
+                            VillagerProfession profession = ForgeRegistries.PROFESSIONS.getValue(new ResourceLocation(villagerData.getString("ProfessionName")));
                             VillagerCareer career = profession.getCareer(villagerData.getInt("Career"));
                             return "- " + I18n.format("tooltip.profession") + ": " + I18n.format("entity.minecraft.villager." + career.getName().toLowerCase());
                         }
@@ -126,7 +126,7 @@ public class BaggableMobsUtil
         {
             if (type.getRegistryName().equals(resLoc))
             {
-                ItemSpawnEgg egg = ItemSpawnEgg.getEgg(type);
+                SpawnEggItem egg = SpawnEggItem.getEgg(type);
 
                 if(egg != null)
                     return egg.getColor(index);
@@ -144,11 +144,11 @@ public class BaggableMobsUtil
             {
                 for (Entry<ResourceLocation, EntityType<?>> entry : ForgeRegistries.ENTITIES.getEntries())
                 {
-                    if (BaggableMobsConfig.CONFIG.DISABLE_CAPTURING_HOSTILE_MOBS.get() && EntityMob.class.isAssignableFrom(entry.getValue().getEntityClass()))
+                    if (BaggableMobsConfig.CONFIG.DISABLE_CAPTURING_HOSTILE_MOBS.get() && MonsterEntity.class.isAssignableFrom(entry.getValue().getEntityClass()))
                     {
                         continue;
                     }
-                    if (EntityLiving.class.isAssignableFrom(entry.getValue().getEntityClass()) && !getConfigMobList().contains(entry.getValue()))
+                    if (MobEntity.class.isAssignableFrom(entry.getValue().getEntityClass()) && !getConfigMobList().contains(entry.getValue()))
                     {
                         CAPTURABLE_MOBS.put(entry.getKey(), entry.getValue());
                     }
@@ -201,7 +201,7 @@ public class BaggableMobsUtil
     }
 
     // Generates the text file containing a full list of living entities available in the current instance
-    public static void generateEntityList(EntityPlayer player)
+    public static void generateEntityList(PlayerEntity player)
     {
         final String filename = "EntityList.txt";
         File entityListFile = new File(filename);
@@ -214,7 +214,7 @@ public class BaggableMobsUtil
         fileContents.add("========================================");
         for (EntityType<?> entity : ForgeRegistries.ENTITIES.getValues())
         {
-            if (EntityLiving.class.isAssignableFrom(entity.getEntityClass()))
+            if (MobEntity.class.isAssignableFrom(entity.getEntityClass()))
             {
                 fileContents.add(entity.getRegistryName().toString() + " - " + entity.getEntityClass().getSimpleName().toString() + ".class - " + I18n.format(entity.getTranslationKey()));
             }
@@ -222,7 +222,7 @@ public class BaggableMobsUtil
         try
         {
             FileUtils.writeLines(entityListFile, "UTF-8", fileContents, false);
-            player.sendMessage(new TextComponentString("Generated entity list file at " + TextFormatting.ITALIC + "" + entityListFile.getAbsolutePath()));
+            player.sendMessage(new StringTextComponent("Generated entity list file at " + TextFormatting.ITALIC + "" + entityListFile.getAbsolutePath()));
         }
         catch (IOException e)
         {
@@ -250,14 +250,14 @@ public class BaggableMobsUtil
                     }
                     entity.setUniqueId(UUID.randomUUID());
                     entity.setLocationAndAngles(pos.getX() + 0.5F, pos.getY(), pos.getZ() + 0.5F, 0.0F, 0.0F);
-                    world.spawnEntity(entity);
+                    world.addEntity(entity);
                     if (!isPlayerCreative)
                     {
                         mobBag.setTag(null);
                     }
-                    if (entity instanceof EntityLiving)
+                    if (entity instanceof MobEntity)
                     {
-                        ((EntityLiving) entity).playAmbientSound();
+                        ((MobEntity) entity).playAmbientSound();
                     }
                     return true;
                 }
@@ -267,7 +267,7 @@ public class BaggableMobsUtil
     }
 
     // Stores the mob in the bag and optionally kills it (in Creative mode, mobs aren't killed)
-    public static boolean storeMobInBag(EntityPlayer player, EntityLivingBase mob, boolean killMob)
+    public static boolean storeMobInBag(PlayerEntity player, LivingEntity mob, boolean killMob)
     {
         ItemStack mobBag = player.getHeldItemMainhand();
         World world = player.getEntityWorld();
@@ -287,7 +287,7 @@ public class BaggableMobsUtil
                     String mobLoc = type.getRegistryName().toString();
                     if (!mobBag.hasTag())
                     {
-                        mobBag.setTag(new NBTTagCompound());
+                        mobBag.setTag(new CompoundNBT());
                     }
                     mobBag.getTag().putString(CAPTURED_MOB_TAG, mobLoc);
                     mobBag.getTag().put(CAPTURED_MOB_DATA_TAG, mob.serializeNBT());
@@ -300,11 +300,11 @@ public class BaggableMobsUtil
                         if (!player.addItemStackToInventory(leftOverBags))
                         {
                             BlockPos pos = player.getPosition();
-                            EntityItem leftOverEntity = new EntityItem(world, pos.getX(), pos.getY(), pos.getZ(), leftOverBags);
+                            ItemEntity leftOverEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), leftOverBags);
                             leftOverEntity.setDefaultPickupDelay();
                             if (!world.isRemote)
                             {
-                                world.spawnEntity(leftOverEntity);
+                                world.addEntity(leftOverEntity);
                             }
                         }
                     }

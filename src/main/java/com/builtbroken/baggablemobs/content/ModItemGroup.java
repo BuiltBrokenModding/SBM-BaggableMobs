@@ -12,17 +12,17 @@ import com.builtbroken.baggablemobs.init.BaggableMobsConfig;
 import com.builtbroken.baggablemobs.lib.BaggableMobsUtil;
 import com.google.common.collect.Lists;
 
+import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.merchant.villager.VillagerEntity;
+import net.minecraft.entity.merchant.villager.VillagerProfession;
+import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.GameData;
 
@@ -66,16 +66,16 @@ public class ModItemGroup extends ItemGroup
             for (EntityType<?> type : mobList)
             {//ForgeRegistries.ENTITIES.getValuesCollection()) {
                 Class<? extends Entity> tempEntity = type.getEntityClass();
-                if (EntityCreature.class.isAssignableFrom(tempEntity) || EntityDragon.class.isAssignableFrom(tempEntity))
+                if (CreatureEntity.class.isAssignableFrom(tempEntity) || EnderDragonEntity.class.isAssignableFrom(tempEntity))
                 {
-                    if (BaggableMobsConfig.CONFIG.DISABLE_CAPTURING_HOSTILE_MOBS.get() && EntityMob.class.isAssignableFrom(tempEntity))
+                    if (BaggableMobsConfig.CONFIG.DISABLE_CAPTURING_HOSTILE_MOBS.get() && MonsterEntity.class.isAssignableFrom(tempEntity))
                     {
                         continue;
                     }
 
                     if (BaggableMobsUtil.isVillager(type.getRegistryName()))
                     {
-                        for (VillagerProfession profession : ForgeRegistries.VILLAGER_PROFESSIONS.getValues())
+                        for (VillagerProfession profession : ForgeRegistries.PROFESSIONS.getValues())
                         {
                             ItemStack mobBag = new ItemStack(BaggableMobs.itemMobBag);
                             if (!storeVillagerInBag(mobBag, profession))
@@ -106,7 +106,7 @@ public class ModItemGroup extends ItemGroup
                     String mobLoc = type.getRegistryName().toString();
                     if (!mobBag.hasTag())
                     {
-                        mobBag.setTag(new NBTTagCompound());
+                        mobBag.setTag(new CompoundNBT());
                     }
                     mobBag.getTag().putString(CAPTURED_MOB_TAG, mobLoc);
                 }
@@ -120,15 +120,15 @@ public class ModItemGroup extends ItemGroup
         {
             for (EntityType<?> type : BaggableMobsUtil.getCapturableMobs().values())
             {
-                if (type.getEntityClass().equals(EntityVillager.class))
+                if (type.getEntityClass().equals(VillagerEntity.class))
                 {
                     String mobLoc = type.getRegistryName().toString();
                     if (!mobBag.hasTag())
                     {
-                        mobBag.setTag(new NBTTagCompound());
+                        mobBag.setTag(new CompoundNBT());
                     }
                     mobBag.getTag().putString(CAPTURED_MOB_TAG, mobLoc);
-                    NBTTagCompound professionData = new NBTTagCompound();
+                    CompoundNBT professionData = new CompoundNBT();
                     professionData.putInt("Profession", GameData.getWrapper(VillagerProfession.class).getId(profession));
                     professionData.putString("ProfessionName", profession.getRegistryName().toString());
                     professionData.putInt("Career", 0);

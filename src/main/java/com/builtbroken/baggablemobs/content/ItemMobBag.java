@@ -10,18 +10,18 @@ import com.builtbroken.baggablemobs.lib.BaggableMobsUtil;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 /**
@@ -43,15 +43,15 @@ public class ItemMobBag extends Item
     }
 
     @Override
-    public EnumActionResult onItemUse(ItemUseContext ctx)
+    public ActionResultType onItemUse(ItemUseContext ctx)
     {
-        EntityPlayer player = ctx.getPlayer();
-        EnumHand hand = player.getActiveHand();
+        PlayerEntity player = ctx.getPlayer();
+        Hand hand = player.getActiveHand();
         World world = ctx.getWorld();
-        EnumFacing facing = ctx.getFace();
+        Direction facing = ctx.getFace();
         BlockPos pos = ctx.getPos();
 
-        if (hand == EnumHand.MAIN_HAND && player != null)
+        if (hand == Hand.MAIN_HAND && player != null)
         {
             ItemStack bag = player.getHeldItemMainhand();
             if (world.isRemote)
@@ -60,11 +60,11 @@ public class ItemMobBag extends Item
             }
             if (!world.isRemote)
             {
-                BaggableMobsUtil.spawnMobFromBag(bag, world, facing == EnumFacing.UP ? pos.up(1) : pos.offset(facing), player.isCreative());
-                return EnumActionResult.SUCCESS;
+                BaggableMobsUtil.spawnMobFromBag(bag, world, facing == Direction.UP ? pos.up(1) : pos.offset(facing), player.isCreative());
+                return ActionResultType.SUCCESS;
             }
         }
-        return EnumActionResult.PASS;
+        return ActionResultType.PASS;
     }
 
     @Override
@@ -74,12 +74,12 @@ public class ItemMobBag extends Item
         if (mob == null)
         {
             String mobType = BaggableMobsConfig.CONFIG.DISABLE_CAPTURING_HOSTILE_MOBS.get() ? I18n.format("tooltip.a_friendly") : I18n.format("tooltip.any");
-            tooltip.add(new TextComponentString(
-                    new TextComponentTranslation("tooltip.right_click").getFormattedText()
+            tooltip.add(new StringTextComponent(
+                    new TranslationTextComponent("tooltip.right_click").getFormattedText()
                     + " " +
-                    new TextComponentTranslation(mobType).getFormattedText()
+                    new TranslationTextComponent(mobType).getFormattedText()
                     + " " +
-                    new TextComponentTranslation("tooltip.mob_to_capture").getFormattedText()));
+                    new TranslationTextComponent("tooltip.mob_to_capture").getFormattedText()));
         }
         else
         {
@@ -88,7 +88,7 @@ public class ItemMobBag extends Item
                 String profession = BaggableMobsUtil.getCapturedVillagerProfession(stack);
                 if (!profession.isEmpty())
                 {
-                    tooltip.add(new TextComponentString(profession));
+                    tooltip.add(new StringTextComponent(profession));
                 }
             }
         }
@@ -103,7 +103,7 @@ public class ItemMobBag extends Item
             if (BaggableMobsUtil.isVillager(BaggableMobsUtil.getCapturedMobInBag(stack)))
             {
             }
-            return new TextComponentString(super.getDisplayName(stack).getFormattedText() + " (" + mobName + ")");
+            return new StringTextComponent(super.getDisplayName(stack).getFormattedText() + " (" + mobName + ")");
         }
         return super.getDisplayName(stack);
     }

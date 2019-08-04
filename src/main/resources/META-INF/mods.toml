@@ -1,5 +1,5 @@
 modLoader="javafml" #mandatory
-loaderVersion="[25,)" #mandatory
+loaderVersion="[28,)" #mandatory
 issueTrackerURL="https://github.com/BuiltBrokenModding/SBM-BaggableMobs/issues"
 displayURL="http://minecraft.curseforge.com/projects/sbm-baggable-mobs"
 authors="BuiltBrokenModding"
@@ -13,13 +13,13 @@ description='''A simple and configurable mob capture mod''' #mandatory
 [[dependencies.baggablemobs]]
     modId="forge"
     mandatory=true
-    versionRange="[25,)"
+    versionRange="[28,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.baggablemobs]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.13.2]"
+    versionRange="[1.14,1.15)"
     ordering="NONE"
     side="BOTH"

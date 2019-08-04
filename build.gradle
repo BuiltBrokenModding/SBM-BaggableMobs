@@ -18,7 +18,7 @@ archivesBaseName = 'SBM-Baggable Mobs'
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
-    mappings channel: 'snapshot', version: '20191702-1.13.1'
+    mappings channel: 'snapshot', version: '20190803-1.14.3'
 	
     runs {
         client {
@@ -48,7 +48,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.13.2-25.0.45'
+    minecraft 'net.minecraftforge:forge:1.14.4-28.0.40'
 }
 
 jar {
