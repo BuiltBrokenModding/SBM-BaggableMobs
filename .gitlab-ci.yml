@@ -29,20 +29,28 @@ build:
       - build/libs/*.jar
     expire_in: 1 week
     
+    
+build_changelog:
+  stage: build_changelog
+  script: 
+    - chmod 770 gradlew
+    - ./gradlew makeChangelog
+  artifacts:
+    paths:
+      - /*.html
+    expire_in: 1 week
+    
+    
 deploy:
   stage: deploy
   script:
     - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
     - chmod 770 gradlew
-    - ./gradlew clean build publish curseforge312123 -S -i --refresh-dependencies
+    - ./gradlew clean build publish makeChangelog curseforge312123 -S -i --refresh-dependencies
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
     paths:
       - build
       - .gradle
-  artifacts:
-    paths:
-      - /*.html
-    expire_in: 1 week
 
