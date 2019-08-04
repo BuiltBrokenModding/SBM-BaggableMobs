@@ -7,7 +7,8 @@
 variables:
   GRADLE_OPTS: 
     -Dorg.gradle.daemon=false
-
+    
+#Anything in here will run before each stage
 before_script:
   
   
@@ -28,19 +29,7 @@ build:
     paths:
       - build/libs/*.jar
     expire_in: 1 week
-    
-    
-test:
-  stage: test
-  script: 
-    - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
-    - chmod 770 gradlew
-    - ./gradlew clean build makeChangelog
-  artifacts:
-    paths:
-      - build/libs/*.html
-    expire_in: 1 week
-    
+      
     
 deploy:
   stage: deploy
