@@ -1,7 +1,8 @@
 # Testfile for gitlabs CI/CD Pipeline and Auto DevOps
 
 # Run seperatly when installing on another device
-#  - apt-get install -y sqlite3 libsqlite3-dev nodejs gradle
+#  - apt-get install -y sqlite3 libsqlite3-dev nodejs gradle default-jdk
+#  - sudo curl -L --output /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
   
 variables:
   GRADLE_OPTS: 
