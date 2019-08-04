@@ -27,7 +27,7 @@ build:
       - .gradle
   artifacts:
     paths:
-      - /libs/*.jar
+      - build/libs/*.jar
     expire_in: 1 week
     
 deploy:
