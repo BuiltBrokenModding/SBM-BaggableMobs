@@ -33,6 +33,7 @@ build:
 test:
   stage: test
   script: 
+    - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
     - chmod 770 gradlew
     - ./gradlew clean build makeChangelog
   artifacts:
