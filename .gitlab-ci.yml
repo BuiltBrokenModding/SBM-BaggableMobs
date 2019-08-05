@@ -1,5 +1,4 @@
 # Script for gitlabs CI/CD Pipeline and Auto DevOps
-
 # Run seperatly when installing on another device
 #  - apt-get install -y sqlite3 libsqlite3-dev nodejs gradle default-jdk
 #  - sudo curl -L --output /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
@@ -10,7 +9,7 @@ variables:
     
 #Anything in here will run before each job
 before_script:
-#  - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
+  - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
   
 # Builds the mod  
 build:
@@ -36,6 +35,7 @@ make_changelog:
     - ./gradlew makeChangelog
   cache:
     key: "$CI_COMMIT_REF_NAME"
+    policy: pull
     policy: push
     paths:
       - libs
@@ -45,9 +45,6 @@ make_changelog:
   artifacts:
     paths:
       - /*.html
-      - build/*.html
-      - libs/*.html
-      - build/libs/*.html
     expire_in: 1 week
     
 # Pulls the artifacts(mod jar and changelog) from the other jobs and uploads to curseforge   
@@ -64,8 +61,6 @@ deploy:
       - libs
       - build
       - /*.html
-  only:
-    - clear_cache
   artifacts:
     paths:
       - /*.html
