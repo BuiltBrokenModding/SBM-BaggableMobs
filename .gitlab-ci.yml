@@ -30,7 +30,6 @@ build:
       - build/libs/*.jar
       - libs/*.html
       - /*.html
-      - *.html
     expire_in: 1 week
       
       
@@ -52,7 +51,6 @@ make_changelog:
     paths:
       - libs/*.html
       - /*.html
-      - *.html
     expire_in: 1 week
     
     
