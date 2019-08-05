@@ -19,7 +19,10 @@ build:
   cache:
     policy: push
     paths:
+      - libs
       - build/libs
+      - build
+      - /*.html
   artifacts:
     paths:
       - build/libs/*.jar
