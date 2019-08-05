@@ -27,7 +27,7 @@ plugins {
   id "net.franz-becker.gradle-lombok" version "1.3"
   id 'com.jfrog.bintray' version '1.1'
   //Applies the changelog pluginid 
-  id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.63"
+  id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.55"
   id "org.ajoberstar.grgit" version "2.1.0"
 }
 
