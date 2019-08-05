@@ -1,34 +1,67 @@
+# Script for gitlabs CI/CD Pipeline and Auto DevOps
+
+# Run seperatly when installing on another device
+#  - apt-get install -y sqlite3 libsqlite3-dev nodejs gradle default-jdk
+#  - sudo curl -L --output /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64
+  
 variables:
   GRADLE_OPTS: 
     -Dorg.gradle.daemon=false
+    
+#Anything in here will run before each job
 before_script:
-  - gradle build
+#  - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
   
-  
-# Run the following commands
+# Builds the mod  
 build:
   stage: build
   script:
-    - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
-    - chmod a+x ./gradlew
+    - gradle build
   cache:
-    key: "$CI_COMMIT_REF_NAME"
     policy: push
     paths:
-      - build
-      - .gradle
+      - build/libs
   artifacts:
     paths:
       - build/libs/*.jar
     expire_in: 1 week
       
+# Assures there is a changelog.html      
+make_changelog:
+  stage: build
+  script:
+    - mkdir libs
+    - chmod 770 gradlew
+    - chmod a+x gradlew
+    - ./gradlew makeChangelog
+  cache:
+    policy: push
+    paths:
+      - libs
+      - build/libs
+      - build
+      - /*.html
+  artifacts:
+    paths:
+      - /*.html
+    expire_in: 1 week
+    
+# Pulls the artifacts(mod jar and changelog) from the other jobs and uploads to curseforge   
 deploy:
   stage: deploy
   script:
-    - ./gradlew clean build makeChangelog publish curseforge312123 -S -i --refresh-dependencies
+    - chmod a+x ./gradlew
+    - chmod 770 gradlew
+    - ./gradlew clean build publish curseforge312123 -S -i --refresh-dependencies
   cache:
-    key: "$CI_COMMIT_REF_NAME"
     policy: pull
     paths:
+      - build/libs
+      - libs
       - build
-      - .gradle
+      - /*.html
+  artifacts:
+    paths:
+      - /*.html
+      - build/libs/*.jar
+    expire_in: 1 week
