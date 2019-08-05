@@ -28,6 +28,9 @@ build:
   artifacts:
     paths:
       - build/libs/*.jar
+      - libs/*.html
+      - /*.html
+      - *.html
     expire_in: 1 week
       
       
