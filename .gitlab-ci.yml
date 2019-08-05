@@ -45,6 +45,9 @@ make_changelog:
   artifacts:
     paths:
       - /*.html
+      - build/*.html
+      - libs/*.html
+      - build/libs/*.html
     expire_in: 1 week
     
 # Pulls the artifacts(mod jar and changelog) from the other jobs and uploads to curseforge   
