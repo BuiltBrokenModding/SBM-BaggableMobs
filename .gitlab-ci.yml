@@ -58,7 +58,7 @@ deploy:
     - chmod 770 gradlew
     - ./gradlew clean build publish curseforge312123 -S -i --refresh-dependencies
   cache:
-    policy: pull
+    policy: push
     paths:
       - build/libs
       - libs
