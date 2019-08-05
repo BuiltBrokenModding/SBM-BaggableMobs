@@ -18,11 +18,13 @@ build:
   stage: build
   script:
     - gradle build
+  cache:
+    policy: push
+    paths:
+      - build/libs
   artifacts:
     paths:
       - build/libs/*.jar
-      - libs/*.html
-      - /*.html
     expire_in: 1 week
       
       
@@ -34,15 +36,14 @@ make_changelog:
     - chmod a+x gradlew
     - ./gradlew makeChangelog
   cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
+    policy: push
     paths:
       - libs
       - build/libs
       - build
+      - /*.html
   artifacts:
     paths:
-      - libs/*.html
       - /*.html
     expire_in: 1 week
     
@@ -54,16 +55,14 @@ deploy:
     - chmod 770 gradlew
     - ./gradlew clean build publish curseforge312123 -S -i --refresh-dependencies
   cache:
-    key: "$CI_COMMIT_REF_NAME"
     policy: pull
     paths:
       - build/libs
       - libs
       - build
-      - .gradle
+      - /*.html
   artifacts:
     paths:
-      - libs/*.html
       - /*.html
       - build/libs/*.jar
     expire_in: 1 week
