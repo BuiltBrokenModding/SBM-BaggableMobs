@@ -16,6 +16,7 @@ build:
   script:
     - gradle build
   cache:
+    key: "$CI_COMMIT_REF_NAME"
     policy: push
     paths:
       - build/libs
@@ -34,6 +35,7 @@ deploy:
     - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
     - ./gradlew clean build makeChangelog publish curseforge312123 -S -i --refresh-dependencies
   cache:
+    key: "$CI_COMMIT_REF_NAME"
     policy: pull
     paths:
       - build/libs
