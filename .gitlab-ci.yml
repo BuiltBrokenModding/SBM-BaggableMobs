@@ -6,7 +6,7 @@
   
 variables:
   GRADLE_OPTS: 
-    -Dorg.gradle.daemon=false
+    -Dorg.gradle.daemon=true
     
 #Anything in here will run before each stage
 before_script:
@@ -49,6 +49,7 @@ make_changelog:
     paths:
       - libs/*.html
       - /*.html
+      - *.html
     expire_in: 1 week
     
     
