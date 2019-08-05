@@ -10,7 +10,7 @@ variables:
     
 #Anything in here will run before each job
 before_script:
-  - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
+#  - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
   
 # Builds the mod  
 build:
@@ -58,7 +58,7 @@ deploy:
     - chmod 770 gradlew
     - ./gradlew clean build publish curseforge312123 -S -i --refresh-dependencies
   cache:
-    policy: push
+    policy: pull
     paths:
       - build/libs
       - libs
