@@ -35,6 +35,7 @@ make_changelog:
     - chmod a+x gradlew
     - ./gradlew makeChangelog
   cache:
+    key: "$CI_COMMIT_REF_NAME"
     policy: push
     paths:
       - libs
