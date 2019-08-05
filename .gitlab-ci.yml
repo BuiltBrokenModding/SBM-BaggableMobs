@@ -12,7 +12,7 @@ before_script:
   
 # Builds the mod  
 build:
- stage: build
+  stage: build
   script:
     - gradle build
   cache:
