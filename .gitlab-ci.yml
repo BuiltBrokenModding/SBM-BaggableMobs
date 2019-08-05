@@ -51,7 +51,7 @@ deploy:
   script:
     - chmod a+x ./gradlew
     - chmod 770 gradlew
-    - ./gradlew clean build publish curseforge312123 -S -i --refresh-dependencies
+    - ./gradlew clean build makeChangelog publish curseforge312123 -S -i --refresh-dependencies
   cache:
     policy: pull
     paths:
