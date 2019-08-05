@@ -8,12 +8,11 @@ variables:
   GRADLE_OPTS: 
     -Dorg.gradle.daemon=false
     
-#Anything in here will run before each stage
+#Anything in here will run before each job
 before_script:
   - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
   
-  
-# Run the following commands
+# Builds the mod  
 build:
   stage: build
   script:
@@ -27,7 +26,7 @@ build:
       - build/libs/*.jar
     expire_in: 1 week
       
-      
+# Assures there is a changelog.html      
 make_changelog:
   stage: build
   script:
@@ -47,7 +46,7 @@ make_changelog:
       - /*.html
     expire_in: 1 week
     
-    
+# Pulls the artifacts(mod jar and changelog) from the other jobs and uploads to curseforge   
 deploy:
   stage: deploy
   script:
