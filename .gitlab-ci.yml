@@ -72,5 +72,6 @@ deploy:
     paths:
       - libs/*.html
       - /*.html
+      - build/libs/*.jar
     expire_in: 1 week
 
