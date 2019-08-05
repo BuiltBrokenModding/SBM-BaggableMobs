@@ -29,11 +29,11 @@ build:
 deploy:
   stage: build
   script:
-    - mkdir libs
-    - chmod a+x ./gradlew
-    - chmod 770 gradlew
-    - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
-    - ./gradlew clean build makeChangelog publish curseforge312123 -S -i --refresh-dependencies
+    - sudo mkdir libs
+    - sudo chmod a+x ./gradlew
+    - sudo chmod 770 gradlew
+    - sudo git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
+    - sudo ./gradlew clean build makeChangelog publish curseforge312123 -S -i --refresh-dependencies
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
