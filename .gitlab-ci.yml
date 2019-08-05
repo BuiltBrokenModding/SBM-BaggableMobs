@@ -19,10 +19,7 @@ build:
   cache:
     policy: push
     paths:
-      - libs
       - build/libs
-      - build
-      - /*.html
   artifacts:
     paths:
       - build/libs/*.jar
@@ -39,9 +36,6 @@ deploy:
     policy: pull
     paths:
       - build/libs
-      - libs
-      - build
-      - /*.html
   artifacts:
     paths:
       - /*.html
