@@ -61,6 +61,8 @@ deploy:
       - libs
       - build
       - /*.html
+  only:
+    - clear_cache
   artifacts:
     paths:
       - /*.html
