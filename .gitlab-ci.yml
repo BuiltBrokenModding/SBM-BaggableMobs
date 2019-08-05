@@ -11,6 +11,7 @@ variables:
 #Anything in here will run before each job
 before_script:
 #  - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
+   - gradle build
   
 # Builds the mod  
 build:
