@@ -31,8 +31,8 @@ build:
     expire_in: 1 week
       
       
-test:
-  stage: make_changelog
+make_changelog:
+  stage: test
   script:
     - mkdir libs
     - chmod 770 gradlew
