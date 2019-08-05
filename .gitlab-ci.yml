@@ -12,18 +12,18 @@ before_script:
   - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
   
 # Builds the mod  
-build:
-  stage: build
-  script:
-    - gradle build
-  cache:
-    policy: push
-    paths:
-      - build/libs
-  artifacts:
-    paths:
-      - build/libs/*.jar
-    expire_in: 1 week
+##build:
+# stage: build
+#  script:
+#    - gradle build
+#  cache:
+#    policy: push
+#    paths:
+#      - build/libs
+#  artifacts:
+#    paths:
+#      - build/libs/*.jar
+#    expire_in: 1 week
     
 # Pulls the artifacts(mod jar and changelog) from the other jobs and uploads to curseforge   
 deploy:
@@ -31,6 +31,7 @@ deploy:
   script:
     - chmod a+x ./gradlew
     - chmod 777 gradlew
+    - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
     - ./gradlew clean build makeChangelog publish curseforge312123 -S -i --refresh-dependencies
   cache:
     policy: pull
