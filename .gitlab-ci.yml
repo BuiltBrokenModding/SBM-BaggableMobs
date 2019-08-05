@@ -47,6 +47,8 @@ deploy:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
     paths:
+      - build/libs
+      - libs
       - build
       - .gradle
   artifacts:
