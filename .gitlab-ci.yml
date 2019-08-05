@@ -10,14 +10,15 @@ variables:
     
 #Anything in here will run before each stage
 before_script:
+  - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
   
   
 # Run the following commands
 build:
   stage: build
   script:
-    - gradle build
     - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
+    - gradle build
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
@@ -37,6 +38,7 @@ make_changelog:
     - mkdir libs
     - chmod 770 gradlew
     - chmod a+x gradlew
+    - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
     - ./gradlew makeChangelog
   cache:
     key: "$CI_COMMIT_REF_NAME"
