@@ -20,7 +20,7 @@ build:
     - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
   cache:
     key: "$CI_COMMIT_REF_NAME"
-    policy: push
+    policy: pull
     paths:
       - libs
       - build/libs
