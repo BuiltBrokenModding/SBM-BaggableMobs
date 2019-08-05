@@ -24,26 +24,6 @@ build:
     paths:
       - build/libs/*.jar
     expire_in: 1 week
-      
-# Assures there is a changelog.html      
-make_changelog:
-  stage: build
-  script:
-    - mkdir libs
-    - chmod 770 gradlew
-    - chmod a+x gradlew
-    - ./gradlew makeChangelog
-  cache:
-    policy: push
-    paths:
-      - libs
-      - build/libs
-      - build
-      - /*.html
-  artifacts:
-    paths:
-      - /*.html
-    expire_in: 1 week
     
 # Pulls the artifacts(mod jar and changelog) from the other jobs and uploads to curseforge   
 deploy:
