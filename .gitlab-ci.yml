@@ -27,6 +27,7 @@ build:
     
 # Pulls the artifacts(mod jar) from the build job and uploads to curseforge   
 deploy:
+# Moved from the deploy to the build stage as the deploy stage loves to disappear from the pipeline for no reason.
   stage: build
   script:
     - mkdir libs
