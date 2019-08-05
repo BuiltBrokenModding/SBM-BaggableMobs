@@ -35,7 +35,6 @@ make_changelog:
     - ./gradlew makeChangelog
   cache:
     key: "$CI_COMMIT_REF_NAME"
-    policy: pull
     policy: push
     paths:
       - libs
@@ -49,7 +48,7 @@ make_changelog:
     
 # Pulls the artifacts(mod jar and changelog) from the other jobs and uploads to curseforge   
 deploy:
-  stage: deploy
+  stage: build
   script:
     - chmod a+x ./gradlew
     - chmod 770 gradlew
