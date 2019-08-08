@@ -44,4 +44,5 @@ deploy:
     paths:
       - /*.html
       - build/libs/*.jar
+      - /home/services/dmod/maven/*.jar
     expire_in: 1 week
