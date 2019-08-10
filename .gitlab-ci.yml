@@ -36,7 +36,7 @@ deploy:
     - git remote set-url origin https://github.com/BuiltBrokenModding/SBM-BaggableMobs
     - ./gradlew clean build makeChangelog publish curseforge312123 -S -i --refresh-dependencies
     # Export all variables, uncomment if you want a list of all variables at the end of the job
-    - export
+    # - export
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
