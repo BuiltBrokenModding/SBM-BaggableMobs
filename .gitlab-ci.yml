@@ -44,7 +44,7 @@ deploy:
       - build/libs
   artifacts:
     paths:
-      - /*.html
       - build/libs/*.jar
-      - /home/services/dmod/maven/*.jar
+      - output/*.jar
+      - output/*.html
     expire_in: 1 week
