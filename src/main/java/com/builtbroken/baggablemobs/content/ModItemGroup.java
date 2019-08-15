@@ -12,13 +12,9 @@ import com.builtbroken.baggablemobs.init.BaggableMobsConfig;
 import com.builtbroken.baggablemobs.lib.BaggableMobsUtil;
 import com.google.common.collect.Lists;
 
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
-import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -65,43 +61,39 @@ public class ModItemGroup extends ItemGroup
             Collection<EntityType<?>> mobList = BaggableMobsUtil.getCapturableMobs().values();
             for (EntityType<?> type : mobList)
             {//ForgeRegistries.ENTITIES.getValuesCollection()) {
-                Class<? extends Entity> tempEntity = type.getEntityClass();
-                if (CreatureEntity.class.isAssignableFrom(tempEntity) || EnderDragonEntity.class.isAssignableFrom(tempEntity))
+                if (BaggableMobsConfig.CONFIG.DISABLE_CAPTURING_HOSTILE_MOBS.get() && type.getClassification() == EntityClassification.MONSTER)
                 {
-                    if (BaggableMobsConfig.CONFIG.DISABLE_CAPTURING_HOSTILE_MOBS.get() && MonsterEntity.class.isAssignableFrom(tempEntity))
-                    {
-                        continue;
-                    }
-
-                    if (BaggableMobsUtil.isVillager(type.getRegistryName()))
-                    {
-                        for (VillagerProfession profession : ForgeRegistries.PROFESSIONS.getValues())
-                        {
-                            ItemStack mobBag = new ItemStack(BaggableMobs.itemMobBag);
-                            if (!storeVillagerInBag(mobBag, profession))
-                            {
-                                break;
-                            }
-                            BAG_LIST.add(mobBag);
-                        }
-                        continue;
-                    }
-                    ItemStack mobBag = new ItemStack(BaggableMobs.itemMobBag);
-                    storeMobInBag(mobBag, tempEntity);
-                    BAG_LIST.add(mobBag);
+                    continue;
                 }
+
+                if (BaggableMobsUtil.isVillager(type.getRegistryName()))
+                {
+                    for (VillagerProfession profession : ForgeRegistries.PROFESSIONS.getValues())
+                    {
+                        ItemStack mobBag = new ItemStack(BaggableMobs.itemMobBag);
+                        if (!storeVillagerInBag(mobBag, profession))
+                        {
+                            break;
+                        }
+                        BAG_LIST.add(mobBag);
+                    }
+                    continue;
+                }
+                ItemStack mobBag = new ItemStack(BaggableMobs.itemMobBag);
+                storeMobInBag(mobBag, type);
+                BAG_LIST.add(mobBag);
             }
         }
         return BAG_LIST;
     }
 
-    private static void storeMobInBag(ItemStack mobBag, Class<? extends Entity> clazz)
+    private static void storeMobInBag(ItemStack mobBag, EntityType<?> typeToStore)
     {
         if (mobBag.getItem() == BaggableMobs.itemMobBag && !doesBagHaveMobStored(mobBag))
         {
             for (EntityType<?> type : BaggableMobsUtil.getCapturableMobs().values())
             {
-                if (type.getEntityClass().equals(clazz))
+                if (type.equals(typeToStore))
                 {
                     String mobLoc = type.getRegistryName().toString();
                     if (!mobBag.hasTag())
@@ -120,7 +112,7 @@ public class ModItemGroup extends ItemGroup
         {
             for (EntityType<?> type : BaggableMobsUtil.getCapturableMobs().values())
             {
-                if (type.getEntityClass().equals(VillagerEntity.class))
+                if (type == EntityType.VILLAGER)
                 {
                     String mobLoc = type.getRegistryName().toString();
                     if (!mobBag.hasTag())

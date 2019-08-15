@@ -22,9 +22,9 @@ public class ModEvents
     @SubscribeEvent
     public static void onEntityInteract(EntityInteract event)
     {
-        if (event.getEntityPlayer() != null && event.getEntityPlayer().getEntityWorld() != null)
+        if (event.getPlayer() != null && event.getPlayer().getEntityWorld() != null)
         {
-            PlayerEntity player = event.getEntityPlayer();
+            PlayerEntity player = event.getPlayer();
             Entity target = event.getTarget();
             ItemStack heldItem = player.getHeldItemMainhand();
             if (!heldItem.isEmpty() && heldItem.getItem() == BaggableMobs.itemMobBag && target instanceof CreatureEntity)

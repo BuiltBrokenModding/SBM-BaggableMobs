@@ -17,12 +17,12 @@ import com.google.common.collect.Maps;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
-import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpawnEggItem;
@@ -32,7 +32,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerCareer;
 import net.minecraftforge.registries.ForgeRegistries;
 
 /**
@@ -108,8 +107,7 @@ public class BaggableMobsUtil
                         {
                             CompoundNBT villagerData = mobBag.getTag().getCompound(CAPTURED_MOB_DATA_TAG);
                             VillagerProfession profession = ForgeRegistries.PROFESSIONS.getValue(new ResourceLocation(villagerData.getString("ProfessionName")));
-                            VillagerCareer career = profession.getCareer(villagerData.getInt("Career"));
-                            return "- " + I18n.format("tooltip.profession") + ": " + I18n.format("entity.minecraft.villager." + career.getName().toLowerCase());
+                            return "- " + I18n.format("tooltip.profession") + ": " + I18n.format("entity.minecraft.villager." + profession.toString());
                         }
                         return "- " + I18n.format("tooltip.profession") + ": " + I18n.format("entity.minecraft.villager");
                     }
@@ -144,15 +142,19 @@ public class BaggableMobsUtil
             {
                 for (Entry<ResourceLocation, EntityType<?>> entry : ForgeRegistries.ENTITIES.getEntries())
                 {
-                    if (BaggableMobsConfig.CONFIG.DISABLE_CAPTURING_HOSTILE_MOBS.get() && MonsterEntity.class.isAssignableFrom(entry.getValue().getEntityClass()))
+                    EntityClassification classification = entry.getValue().getClassification();
+                    if (BaggableMobsConfig.CONFIG.DISABLE_CAPTURING_HOSTILE_MOBS.get() && classification == EntityClassification.MONSTER)
                     {
                         continue;
                     }
-                    if (MobEntity.class.isAssignableFrom(entry.getValue().getEntityClass()) && !getConfigMobList().contains(entry.getValue()))
+                    if ((classification == EntityClassification.AMBIENT || classification == EntityClassification.CREATURE || classification == EntityClassification.WATER_CREATURE) && !getConfigMobList().contains(entry.getValue()))
                     {
                         CAPTURABLE_MOBS.put(entry.getKey(), entry.getValue());
                     }
                 }
+
+                CAPTURABLE_MOBS.put(EntityType.VILLAGER.getRegistryName(), EntityType.VILLAGER); //villagers are classified as MISC
+                CAPTURABLE_MOBS.put(EntityType.IRON_GOLEM.getRegistryName(), EntityType.IRON_GOLEM); //iron golems are classified as MISC
             }
             else
             {
@@ -214,9 +216,9 @@ public class BaggableMobsUtil
         fileContents.add("========================================");
         for (EntityType<?> entity : ForgeRegistries.ENTITIES.getValues())
         {
-            if (MobEntity.class.isAssignableFrom(entity.getEntityClass()))
+            if (entity.getClassification() != EntityClassification.MISC)
             {
-                fileContents.add(entity.getRegistryName().toString() + " - " + entity.getEntityClass().getSimpleName().toString() + ".class - " + I18n.format(entity.getTranslationKey()));
+                fileContents.add(entity.getRegistryName().toString() + " - " + entity.getClass().getSimpleName().toString() + ".class - " + I18n.format(entity.getTranslationKey()));
             }
         }
         try
@@ -282,7 +284,7 @@ public class BaggableMobsUtil
             }
             for (EntityType<?> type : getCapturableMobs().values())
             {
-                if (type.getEntityClass().equals(mob.getClass()))
+                if (type.equals(mob.getType()))
                 {
                     String mobLoc = type.getRegistryName().toString();
                     if (!mobBag.hasTag())
